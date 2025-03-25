@@ -31,14 +31,6 @@ textarea.form-control {
     resize: none;
 }
 
-#qrcode {
-    margin-top: 10px;
-}
-
-.form-text {
-    font-size: 0.9rem;
-}
-
 @media (max-width: 576px) {
     textarea.form-control {
         width: 100%;
