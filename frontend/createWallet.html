@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create a Wallet - Ticketing DApp</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.8.0/dist/web3.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="./createWallet.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Create a Wallet</h1>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <ul class="nav nav-tabs mb-4" id="walletTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="create-tab" data-bs-toggle="tab" data-bs-target="#create" type="button" role="tab" aria-controls="create" aria-selected="true">Create Wallet</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="import-tab" data-bs-toggle="tab" data-bs-target="#import" type="button" role="tab" aria-controls="import" aria-selected="false">Import Wallet</button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content" id="walletTabContent">
+                            <div class="tab-pane fade show active" id="create" role="tabpanel" aria-labelledby="create-tab">
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Password for Keystore</label>
+                                    <input type="password" class="form-control" id="password" placeholder="Enter a strong password">
+                                    <div id="passwordStrength" class="form-text"></div>
+                                </div>
+                                <button id="createWalletButton" class="btn btn-primary w-100 mb-3">
+                                    <i class="fas fa-wallet me-2"></i>Create Wallet
+                                </button>
+                            </div>
+
+                            <div class="tab-pane fade" id="import" role="tabpanel" aria-labelledby="import-tab">
+                                <div class="mb-3">
+                                    <label for="importPrivateKey" class="form-label">Private Key</label>
+                                    <input type="text" class="form-control" id="importPrivateKey" placeholder="Enter your private key">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="importPassword" class="form-label">Password for Keystore</label>
+                                    <input type="password" class="form-control" id="importPassword" placeholder="Enter a password for the new keystore">
+                                </div>
+                                <button id="importWalletButton" class="btn btn-secondary w-100 mb-3">
+                                    <i class="fas fa-file-import me-2"></i>Import Wallet
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="walletDetails" class="mt-4" style="display: none;">
+                            <h3 class="text-center">Wallet Details</h3>
+                            <div class="mb-3">
+                                <label for="walletAddress" class="form-label">Wallet Address</label>
+                                <textarea class="form-control" id="walletAddress" rows="2" readonly></textarea>
+                                <div id="qrcode" class="text-center mt-2"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="privateKey" class="form-label">Private Key</label>
+                                <textarea class="form-control" id="privateKey" rows="2" readonly></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="keystore" class="form-label">Keystore File</label>
+                                <textarea class="form-control" id="keystore" rows="5" readonly></textarea>
+                            </div>
+                            <a class="btn btn-success w-100" id="downloadKeystore" download="wallet.json">
+                                <i class="fas fa-download me-2"></i>Download Keystore
+                            </a>
+                        </div>
+
+                        <div id="statusMessage" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("#walletTabs a").on("click", function() {
+                $("#walletDetails").hide();
+                $("#walletAddress").val("");
+                $("#privateKey").val("");
+                $("#keystore").val("");
+                $("#qrcode").empty();
+                $("#password").val("");
+                $("#importPrivateKey").val("");
+                $("#importPassword").val("");
+                $("#passwordStrength").text("");
+                $("#statusMessage").empty();
+            });
+
+            $("#password").on("input", function() {
+                const password = $(this).val();
+                let strength = "Weak";
+                let color = "text-danger";
+                if (password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password) && /[^A-Za-z0-9]/.test(password)) {
+                    strength = "Strong";
+                    color = "text-success";
+                } else if (password.length >= 6) {
+                    strength = "Medium";
+                    color = "text-warning";
+                }
+                $("#passwordStrength").text(`Password Strength: ${strength}`).removeClass().addClass(`form-text ${color}`);
+            });
+
+            $("#createWalletButton").click(function() {
+                const password = $("#password").val();
+                if (!password) {
+                    showStatusMessage("Please enter a password for the keystore.", "danger");
+                    return;
+                }
+                if (password.length < 8 || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || !/[^A-Za-z0-9]/.test(password)) {
+                    showStatusMessage("Password must be at least 8 characters long, include an uppercase letter, a number, and a special character.", "danger");
+                    return;
+                }
+
+                showStatusMessage("Creating wallet... Please wait.", "info");
+                $("#createWalletButton").prop("disabled", true).html('<i class="fas fa-spinner fa-spin me-2"></i>Creating...');
+
+                try {
+                    const web3 = new Web3();
+                    const wallet = web3.eth.accounts.create();
+
+                    $("#walletAddress").val(wallet.address);
+                    $("#privateKey").val(wallet.privateKey);
+
+                    $("#qrcode").empty();
+                    QRCode.toCanvas(wallet.address, { width: 150 }, function(err, canvas) {
+                        if (err) throw err;
+                        $("#qrcode").append(canvas);
+                    });
+
+                    const keystore = web3.eth.accounts.encrypt(wallet.privateKey, password);
+                    $("#keystore").val(JSON.stringify(keystore, null, 2));
+
+                    $("#walletDetails").show();
+                    showStatusMessage("Wallet created successfully!", "success");
+                } catch (error) {
+                    showStatusMessage(`Error creating wallet: ${error.message}`, "danger");
+                } finally {
+                    $("#createWalletButton").prop("disabled", false).html('<i class="fas fa-wallet me-2"></i>Create Wallet');
+                }
+            });
+
+            $("#importWalletButton").click(function() {
+                const privateKey = $("#importPrivateKey").val().trim();
+                const password = $("#importPassword").val();
+
+                if (!privateKey) {
+                    showStatusMessage("Please enter a private key.", "danger");
+                    return;
+                }
+                if (!password) {
+                    showStatusMessage("Please enter a password for the new keystore.", "danger");
+                    return;
+                }
+
+                showStatusMessage("Importing wallet... Please wait.", "info");
+                $("#importWalletButton").prop("disabled", true).html('<i class="fas fa-spinner fa-spin me-2"></i>Importing...');
+
+                try {
+                    const web3 = new Web3();
+                    if (!privateKey.startsWith("0x")) {
+                        throw new Error("Private key must start with '0x'.");
+                    }
+                    const wallet = web3.eth.accounts.privateKeyToAccount(privateKey);
+
+                    $("#walletAddress").val(wallet.address);
+                    $("#privateKey").val(wallet.privateKey);
+
+                    $("#qrcode").empty();
+                    QRCode.toCanvas(wallet.address, { width: 150 }, function(err, canvas) {
+                        if (err) throw err;
+                        $("#qrcode").append(canvas);
+                    });
+
+                    const keystore = web3.eth.accounts.encrypt(wallet.privateKey, password);
+                    $("#keystore").val(JSON.stringify(keystore, null, 2));
+
+                    $("#walletDetails").show();
+                    showStatusMessage("Wallet imported successfully!", "success");
+                } catch (error) {
+                    showStatusMessage(`Error importing wallet: ${error.message}`, "danger");
+                } finally {
+                    $("#importWalletButton").prop("disabled", false).html('<i class="fas fa-file-import me-2"></i>Import Wallet');
+                }
+            });
+
+            $("#downloadKeystore").click(function() {
+                const keystore = $("#keystore").val();
+                if (!keystore) {
+                    showStatusMessage("Please create or import a wallet first.", "danger");
+                    return;
+                }
+                const walletAddress = $("#walletAddress").val();
+                const blob = new Blob([keystore], { type: "text/plain;charset=utf-8" });
+                saveAs(blob, `${walletAddress}.json`);
+                showStatusMessage("Keystore downloaded successfully!", "success");
+            });
+
+            function showStatusMessage(message, type) {
+                $("#statusMessage").html(`
+                    <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                        ${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `);
+            }
+
+            function saveAs(blob, filename) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = filename;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        });
+    </script>
+</body>
+</html>
