@@ -83,32 +83,22 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        $(document).ready(function() {
-            $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
+            $(document).ready(function() {
+            function resetWalletDetails() {
                 $("#walletDetails").hide();
                 $("#walletAddress").val("");
                 $("#privateKey").val("");
                 $("#keystore").val("");
                 $("#qrcode").empty();
+            }
+
+            $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
                 $("#password").val("");
                 $("#importPrivateKey").val("");
                 $("#importPassword").val("");
                 $("#passwordStrength").text("");
                 $("#statusMessage").empty();
-            });
-
-            $("#password").on("input", function() {
-                const password = $(this).val();
-                let strength = "Weak";
-                let color = "text-danger";
-                if (password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password) && /[^A-Za-z0-9]/.test(password)) {
-                    strength = "Strong";
-                    color = "text-success";
-                } else if (password.length >= 6) {
-                    strength = "Medium";
-                    color = "text-warning";
-                }
-                $("#passwordStrength").text(`Password Strength: ${strength}`).removeClass().addClass(`form-text ${color}`);
+                resetWalletDetails();
             });
 
             $("#createWalletButton").click(function() {
