@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buy Tickets - Ticketing DApp</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.8.0/dist/web3.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <nav id="shared-nav">
+        <a href="index.html" id="nav-home">Home</a>
+        <a href="createWallet.html" id="nav-create-wallet">Create Wallet</a>
+        <a href="checkBalance.html" id="nav-check-balance">Check Balance</a>
+        <a href="buyTicket.html" id="nav-buy-ticket">Buy Ticket</a>
+        <a href="transferTicket.html" id="nav-transfer-ticket">Transfer Ticket</a>
+    </nav>
+
+    <main>
+        <div class="container mt-5">
+            <h1 class="text-center mb-4">Buy Tickets</h1>
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="numberOfTickets" class="form-label">Number of Tickets</label>
+                                <input type="number" class="form-control" id="numberOfTickets" placeholder="Enter number of tickets" min="1">
+                            </div>
+                            <button id="buyTicketsButton" class="button w-100 mb-3">
+                                <i class="fas fa-ticket-alt me-2"></i>Buy Tickets
+                            </button>
+                            <div id="statusMessage" class="mt-3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2025 Ticketing DApp</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/buyTicket.js"></script>
+</body>
+</html>

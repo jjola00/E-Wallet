@@ -1,49 +1,53 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract TicketToken is ERC20, AccessControl {
     bytes32 public constant VENUE_ROLE = keccak256("VENUE_ROLE");
-
-    event TicketsMinted(address indexed venue, address indexed to, uint256 amount);
-    event TicketsTransferred(address indexed from, address indexed to, uint256 amount);
+    uint256 public constant TICKET_PRICE = 0.01 ether; // Price per ticket in ETH
 
     constructor() ERC20("TicketToken", "TKT") {
+        // Replace _setupRole with grantRole
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _grantRole(VENUE_ROLE, msg.sender);
     }
 
-    // Function to mint tickets (restricted to venues)
+    function grantVenueRole(address venue) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        grantRole(VENUE_ROLE, venue);
+    }
+
     function mint(address to, uint256 amount) public onlyRole(VENUE_ROLE) {
         _mint(to, amount);
-        emit TicketsMinted(msg.sender, to, amount);
     }
 
-    // Function to transfer tickets (available to anyone with tokens)
+    // New function to buy tickets
+    function buyTickets(uint256 numberOfTickets) public payable {
+        require(hasRole(VENUE_ROLE, msg.sender), "Caller is not a venue");
+        uint256 totalCost = numberOfTickets * TICKET_PRICE;
+        require(msg.value >= totalCost, "Insufficient ETH sent");
+
+        // Mint tickets (1 ticket = 1 TKT token)
+        _mint(msg.sender, numberOfTickets * 10**18); // Adjust for 18 decimals
+
+        // Refund excess ETH if any
+        if (msg.value > totalCost) {
+            payable(msg.sender).transfer(msg.value - totalCost);
+        }
+    }
+
     function transferTickets(address to, uint256 amount) public {
-        transfer(to, amount);
-        emit TicketsTransferred(msg.sender, to, amount);
+        _transfer(msg.sender, to, amount);
     }
 
-    // Function to check ticket balance (available to anyone)
     function checkBalance(address account) public view returns (uint256) {
         return balanceOf(account);
     }
 
-    // Function to get total supply of tickets (useful for venues)
     function getTotalSupply() public view returns (uint256) {
         return totalSupply();
     }
 
-    // Function to grant venue role to an address (restricted to admin)
-    function grantVenueRole(address account) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        _grantRole(VENUE_ROLE, account);
-    }
-
-    // Override decimals to match the front-end (18 decimals by default in ERC-20)
-    function decimals() public view virtual override returns (uint8) {
-        return 18;
-    }
+    // Allow the contract to receive ETH
+    receive() external payable {}
 }
