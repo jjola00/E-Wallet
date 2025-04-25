@@ -1,13 +1,8 @@
 $(document).ready(function() {
     $("#nav-check-balance").addClass("active");
 
-    const contractAddress = "0xD5d065CB9FeC8Ce0C6A8A85Bcebfc9209D579e20"; 
+    const contractAddress = "0xD5d065CB9FeC8Ce0C6A8A85Bcebfc9209D579e20";
     const contractABI = [
-        {
-            "inputs": [],
-            "stateMutability": "nonpayable",
-            "type": "constructor"
-        },
         {
             "inputs": [
                 {
@@ -26,63 +21,24 @@ $(document).ready(function() {
             ],
             "stateMutability": "view",
             "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "account",
-                    "type": "address"
-                }
-            ],
-            "name": "balanceOf",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "getTotalSupply",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "totalSupply",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
         }
     ];
 
     let web3;
     if (typeof window.ethereum !== "undefined") {
         web3 = new Web3(window.ethereum);
+        window.ethereum.request({ method: "eth_requestAccounts" })
+            .then(accs => {
+                $("#walletAddress").val(accs[0]);
+            })
+            .catch(err => {
+                showStatusMessage("Failed to connect to MetaMask: " + err.message, "danger");
+            });
     } else {
         showStatusMessage("Please install MetaMask to use this DApp.", "danger");
         return;
     }
 
-    // Check if the user is on the Sepolia Testnet (chain ID 11155111)
     const checkNetwork = async () => {
         const chainId = await web3.eth.getChainId();
         if (chainId !== 11155111) {
@@ -95,7 +51,6 @@ $(document).ready(function() {
     const contract = new web3.eth.Contract(contractABI, contractAddress);
 
     $("#checkBalanceButton").click(async function() {
-        // Verify network
         const isCorrectNetwork = await checkNetwork();
         if (!isCorrectNetwork) return;
 
@@ -115,9 +70,7 @@ $(document).ready(function() {
         $("#checkBalanceButton").prop("disabled", true).html('<i class="fas fa-spinner fa-spin me-2"></i>Checking...');
 
         try {
-            // Call the checkBalance function on the contract
             const balance = await contract.methods.checkBalance(walletAddress).call();
-            // Since TicketToken uses 18 decimals (inherited from ERC20), convert from wei to ether
             const balanceInEther = web3.utils.fromWei(balance, "ether");
             $("#balanceResult").html(`
                 <div class="alert alert-success" role="alert">

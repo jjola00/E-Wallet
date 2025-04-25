@@ -1,7 +1,7 @@
 $(document).ready(function() {
     $("#nav-buy-ticket").addClass("active");
 
-    const contractAddress = "0xD5d065CB9FeC8Ce0C6A8A85Bcebfc9209D579e20"; // Update with your deployed contract address
+    const contractAddress = "0xD5d065CB9FeC8Ce0C6A8A85Bcebfc9209D579e20";
     const contractABI = [
         {
             "inputs": [
@@ -15,8 +15,39 @@ $(document).ready(function() {
             "outputs": [],
             "stateMutability": "payable",
             "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "account",
+                    "type": "address"
+                }
+            ],
+            "name": "checkBalance",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "TICKET_PRICE",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
         }
-        // Add other functions as needed (e.g., checkBalance)
     ];
 
     let web3;
@@ -56,19 +87,22 @@ $(document).ready(function() {
             return;
         }
 
-        showStatusMessage("Buying tickets... Please confirm the transaction in MetaMask.", "info");
-        $("#buyTicketsButton").prop("disabled", true).html('<i class="fas fa-spinner fa-spin me-2"></i>Buying...');
-
+        showStatusMessage("Fetching ticket price...", "info");
         try {
-            const ticketPrice = web3.utils.toWei("0.01", "ether"); // 0.01 ETH per ticket
+            const ticketPrice = await contract.methods.TICKET_PRICE().call();
             const totalCost = BigInt(numberOfTickets) * BigInt(ticketPrice);
+
+            showStatusMessage("Buying tickets... Please confirm the transaction in MetaMask.", "info");
+            $("#buyTicketsButton").prop("disabled", true).html('<i class="fas fa-spinner fa-spin me-2"></i>Buying...');
 
             await contract.methods.buyTickets(numberOfTickets).send({
                 from: accounts[0],
                 value: totalCost.toString()
             });
 
-            showStatusMessage(`Successfully bought ${numberOfTickets} tickets!`, "success");
+            const balance = await contract.methods.checkBalance(accounts[0]).call();
+            const balanceInEther = web3.utils.fromWei(balance, "ether");
+            showStatusMessage(`Successfully bought ${numberOfTickets} tickets! Your new balance is ${balanceInEther} TKT.`, "success");
         } catch (error) {
             showStatusMessage(`Error buying tickets: ${error.message}`, "danger");
         } finally {

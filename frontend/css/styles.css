@@ -1,4 +1,3 @@
-/* frontend\css\styles.css */
 html, body {
     height: 100%;
     margin: 0;
@@ -47,7 +46,7 @@ main {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.button, .btn-primary, .btn-secondary, .btn-success, .btn-info {
+.button {
     margin: 10px;
     width: 150px;
     background-color: white;
@@ -63,7 +62,7 @@ main {
     display: inline-block;
 }
 
-.button:hover, .btn-primary:hover, .btn-secondary:hover, .btn-success:hover, .btn-info:hover {
+.button:hover {
     background-color: #000000;
     color: white;
     box-shadow: 0 0 20px rgba(28, 28, 28, 0.5);
