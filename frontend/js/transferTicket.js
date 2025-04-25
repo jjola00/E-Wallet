@@ -1,7 +1,7 @@
 $(document).ready(function() {
     $("#nav-transfer-ticket").addClass("active");
 
-    const contractAddress = "0xD5d065CB9FeC8Ce0C6A8A85Bcebfc9209D579e20"; // Update with your deployed contract address
+    const contractAddress = "0xD5d065CB9FeC8Ce0C6A8A85Bcebfc9209D579e20";
     const contractABI = [
         {
             "inputs": [
@@ -19,6 +19,25 @@ $(document).ready(function() {
             "name": "transferTickets",
             "outputs": [],
             "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "account",
+                    "type": "address"
+                }
+            ],
+            "name": "checkBalance",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
             "type": "function"
         }
     ];
@@ -70,13 +89,23 @@ $(document).ready(function() {
             return;
         }
 
-        showStatusMessage("Transferring tickets... Please confirm the transaction in MetaMask.", "info");
-        $("#transferTicketsButton").prop("disabled", true).html('<i class="fas fa-spinner fa-spin me-2"></i>Transferring...');
+        const amount = web3.utils.toWei(numberOfTickets, "ether");
+        const senderAddress = accounts[0];
 
+        showStatusMessage("Checking balance...", "info");
         try {
-            const amount = web3.utils.toWei(numberOfTickets, "ether"); // Convert to wei (18 decimals)
+            const balance = await contract.methods.checkBalance(senderAddress).call();
+            const balanceInEther = web3.utils.fromWei(balance, "ether");
+            if (parseFloat(balanceInEther) < parseFloat(numberOfTickets)) {
+                showStatusMessage(`Insufficient balance. You have ${balanceInEther} TKT, need ${numberOfTickets} TKT.`, "danger");
+                return;
+            }
+
+            showStatusMessage("Transferring tickets... Please confirm the transaction in MetaMask.", "info");
+            $("#transferTicketsButton").prop("disabled", true).html('<i class="fas fa-spinner fa-spin me-2"></i>Transferring...');
+
             await contract.methods.transferTickets(recipientAddress, amount).send({
-                from: accounts[0]
+                from: senderAddress
             });
 
             showStatusMessage(`Successfully transferred ${numberOfTickets} tickets to ${recipientAddress}!`, "success");
