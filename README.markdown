@@ -12,7 +12,6 @@ This project implements a decentralized ticketing system using Ethereum smart co
   - `checkBalance.html`, `buyTicket.html`, `transferTicket.html`: HTML pages.
   - `checkBalance.js`, `buyTicket.js`, `transferTicket.js`: JavaScript logic.
   - `style.css`: Styling.
-- `report.md`: Project report.
 
 ## Smart Contract Details
 - **Contract Address**: `0x1fB85B7616804E0AadF7D82f8DdE73EAb41E9309`
