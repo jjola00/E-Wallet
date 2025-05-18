@@ -4,7 +4,7 @@ $(document).ready(function() {
     let web3;
     let contract;
     let accounts;
-    const contractAddress = "0x19bF273E4C7ab8a95B41Ea32e24a7C74f883C04E"; // Update after redeploying
+    const contractAddress = "0x1fB85B7616804E0AadF7D82f8DdE73EAb41E9309"; // Updated to new address
     const contractABI = [
         {
             "inputs": [],

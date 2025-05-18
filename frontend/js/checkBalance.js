@@ -3,7 +3,7 @@ $(document).ready(function() {
 
     let web3;
     let contract;
-    const contractAddress = "0x19bF273E4C7ab8a95B41Ea32e24a7C74f883C04E"; // Update after redeploying
+    const contractAddress = "0x1fB85B7616804E0AadF7D82f8DdE73EAb41E9309";
     const contractABI = [
         {
             "inputs": [],
@@ -115,56 +115,6 @@ $(document).ready(function() {
                 }
             ],
             "stateMutability": "view",
-            "type": "function",
-            "constant": true
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "accountOwner",
-                    "type": "address"
-                },
-                {
-                    "internalType": "address",
-                    "name": "spender",
-                    "type": "address"
-                }
-            ],
-            "name": "allowance",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function",
-            "constant": true
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "spender",
-                    "type": "address"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "amount",
-                    "type": "uint256"
-                }
-            ],
-            "name": "approve",
-            "outputs": [
-                {
-                    "internalType": "bool",
-                    "name": "",
-                    "type": "bool"
-                }
-            ],
-            "stateMutability": "nonpayable",
             "type": "function"
         },
         {
@@ -175,7 +125,7 @@ $(document).ready(function() {
                     "type": "address"
                 }
             ],
-            "name": "balanceOf",
+            "name": "checkBalance",
             "outputs": [
                 {
                     "internalType": "uint256",
@@ -184,8 +134,7 @@ $(document).ready(function() {
                 }
             ],
             "stateMutability": "view",
-            "type": "function",
-            "constant": true
+            "type": "function"
         },
         {
             "inputs": [
@@ -198,8 +147,7 @@ $(document).ready(function() {
             "name": "buyTickets",
             "outputs": [],
             "stateMutability": "payable",
-            "type": "function",
-            "payable": true
+            "type": "function"
         },
         {
             "inputs": [],
@@ -212,8 +160,7 @@ $(document).ready(function() {
                 }
             ],
             "stateMutability": "view",
-            "type": "function",
-            "constant": true
+            "type": "function"
         },
         {
             "inputs": [],
@@ -226,8 +173,7 @@ $(document).ready(function() {
                 }
             ],
             "stateMutability": "view",
-            "type": "function",
-            "constant": true
+            "type": "function"
         },
         {
             "inputs": [],
@@ -240,8 +186,7 @@ $(document).ready(function() {
                 }
             ],
             "stateMutability": "view",
-            "type": "function",
-            "constant": true
+            "type": "function"
         },
         {
             "inputs": [],
@@ -254,8 +199,7 @@ $(document).ready(function() {
                 }
             ],
             "stateMutability": "view",
-            "type": "function",
-            "constant": true
+            "type": "function"
         },
         {
             "inputs": [],
@@ -268,8 +212,7 @@ $(document).ready(function() {
                 }
             ],
             "stateMutability": "view",
-            "type": "function",
-            "constant": true
+            "type": "function"
         },
         {
             "inputs": [],
@@ -282,8 +225,7 @@ $(document).ready(function() {
                 }
             ],
             "stateMutability": "view",
-            "type": "function",
-            "constant": true
+            "type": "function"
         },
         {
             "inputs": [
@@ -344,6 +286,54 @@ $(document).ready(function() {
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "accountOwner",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "spender",
+                    "type": "address"
+                }
+            ],
+            "name": "allowance",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "spender",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "approve",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
+            "stateMutability": "nonpayable",
+            "type": "function"
         }
     ];
 
@@ -353,8 +343,10 @@ $(document).ready(function() {
             try {
                 await window.ethereum.request({ method: "eth_requestAccounts" });
                 contract = new web3.eth.Contract(contractABI, contractAddress);
+                console.log("Contract initialized at:", contractAddress);
                 checkNetwork();
             } catch (error) {
+                console.error("MetaMask connection error:", error);
                 showStatusMessage("Failed to connect to MetaMask: " + error.message, "danger");
             }
         } else {
@@ -364,6 +356,7 @@ $(document).ready(function() {
 
     async function checkNetwork() {
         const chainId = await web3.eth.getChainId();
+        console.log("Current chain ID:", chainId);
         const sepoliaChainId = 11155111;
         if (chainId !== sepoliaChainId) {
             showStatusMessage("Please switch to the Sepolia Testnet in MetaMask.", "warning");
@@ -383,12 +376,38 @@ $(document).ready(function() {
         $("#refreshButton").prop("disabled", true);
 
         try {
+            console.log("Checking balance for address:", walletAddress);
+
+            // Test a simpler contract call to verify contract accessibility
+            const ticketPrice = await contract.methods.TICKET_PRICE().call();
+            console.log("TICKET_PRICE:", ticketPrice.toString());
+
             // Check TKT balance
-            const balance = await contract.methods.balanceOf(walletAddress).call();
+            const balance = await contract.methods.checkBalance(walletAddress).call();
+            console.log("Raw TKT balance:", balance.toString());
             const tktBalance = web3.utils.fromWei(balance, "ether");
-            
+
+            // Handle zero balance case
+            if (balance.toString() === "0") {
+                let balanceMessage = "";
+                const sethBalanceWei = await web3.eth.getBalance(walletAddress);
+                const sethBalance = web3.utils.fromWei(sethBalanceWei, "ether");
+                if (actor === "Customer") balanceMessage = `Customer TKT Balance: 0 TKT`;
+                else if (actor === "Vendor") balanceMessage = `Vendor TKT Balance: 0 TKT`;
+                else if (actor === "Admin") {
+                    const contractSethBalance = await contract.methods.getContractBalance().call();
+                    const contractSeth = web3.utils.fromWei(contractSethBalance, "ether");
+                    balanceMessage = `Admin TKT Balance: 0 TKT<br>Contract SETH Balance: ${contractSeth} SETH`;
+                }
+                $("#balanceResult").html(`<div class="alert alert-info" role="alert">${balanceMessage}</div>`);
+                $("#sethBalanceResult").html(`<div class="alert alert-info" role="alert">SETH Balance: ${sethBalance} SETH</div>`);
+                showStatusMessage("Balance checked (no tickets yet).", "success");
+                return;
+            }
+
             // Check SETH balance
             const sethBalanceWei = await web3.eth.getBalance(walletAddress);
+            console.log("Raw SETH balance:", sethBalanceWei.toString());
             const sethBalance = web3.utils.fromWei(sethBalanceWei, "ether");
 
             // Display balances based on actor
@@ -399,6 +418,7 @@ $(document).ready(function() {
                 balanceMessage = `Vendor TKT Balance: ${tktBalance} TKT`;
             } else if (actor === "Admin") {
                 const contractSethBalance = await contract.methods.getContractBalance().call();
+                console.log("Raw contract SETH balance:", contractSethBalance.toString());
                 const contractSeth = web3.utils.fromWei(contractSethBalance, "ether");
                 balanceMessage = `Admin TKT Balance: ${tktBalance} TKT<br>Contract SETH Balance: ${contractSeth} SETH`;
             }
@@ -416,6 +436,10 @@ $(document).ready(function() {
 
             showStatusMessage("Balance checked successfully!", "success");
         } catch (error) {
+            console.error("Balance check error:", error);
+            if (error.message.includes("revert")) {
+                console.log("Revert reason (if available):", error.data?.message || "No additional data");
+            }
             showStatusMessage(`Error checking balance: ${error.message}`, "danger");
         } finally {
             $("#checkBalanceButton").prop("disabled", false).html('<i class="fas fa-search me-2"></i>Check Balance');

@@ -1,7 +1,7 @@
 $(document).ready(function() {
     $("#nav-buy-ticket").addClass("active");
 
-    const contractAddress = "0xA697E52C716358A802Ff96F2f966b85D06766e80";
+    const contractAddress = "0x1fB85B7616804E0AadF7D82f8DdE73EAb41E9309"; // Updated to new address
     const contractABI = [
         {
             "inputs": [
