@@ -6,10 +6,11 @@ async function main() {
     
     // Deploy the contract
     console.log("Deploying Ticketing contract...");
-    const ticketing = await Ticketing.deploy();
-    await ticketing.deployed();
+    const ticketing = await Ticketing.deploy(); // deploy() directly returns the deployed contract
+    console.log("Waiting for deployment to complete...");
+    await ticketing.waitForDeployment(); // Use waitForDeployment() to ensure the contract is fully deployed
     
-    console.log("Ticketing contract deployed to:", ticketing.address);
+    console.log("Ticketing contract deployed to:", await ticketing.getAddress());
 }
 
 // Run the deployment

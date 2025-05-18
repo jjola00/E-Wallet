@@ -1,7 +1,7 @@
 $(document).ready(function() {
     $("#nav-transfer-ticket").addClass("active");
 
-    const contractAddress = "0xD5d065CB9FeC8Ce0C6A8A85Bcebfc9209D579e20";
+    const contractAddress = "0x19bF273E4C7ab8a95B41Ea32e24a7C74f883C04E";
     const contractABI = [
         {
             "inputs": [
