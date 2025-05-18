@@ -4,190 +4,8 @@ $(document).ready(function() {
     let web3;
     let contract;
     let accounts;
-    const contractAddress = "0x1fB85B7616804E0AadF7D82f8DdE73EAb41E9309"; // Updated to new address
+    const contractAddress = "0x1fB85B7616804E0AadF7D82f8DdE73EAb41E9309";
     const contractABI = [
-        {
-            "inputs": [],
-            "stateMutability": "nonpayable",
-            "type": "constructor"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "owner",
-                    "type": "address"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "spender",
-                    "type": "address"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "value",
-                    "type": "uint256"
-                }
-            ],
-            "name": "Approval",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "buyer",
-                    "type": "address"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "numberOfTickets",
-                    "type": "uint256"
-                }
-            ],
-            "name": "TicketsBought",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "from",
-                    "type": "address"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "to",
-                    "type": "address"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "numberOfTickets",
-                    "type": "uint256"
-                }
-            ],
-            "name": "TicketsTransferred",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "from",
-                    "type": "address"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "to",
-                    "type": "address"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "value",
-                    "type": "uint256"
-                }
-            ],
-            "name": "Transfer",
-            "type": "event"
-        },
-        {
-            "inputs": [],
-            "name": "TICKET_PRICE",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function",
-            "constant": true
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "accountOwner",
-                    "type": "address"
-                },
-                {
-                    "internalType": "address",
-                    "name": "spender",
-                    "type": "address"
-                }
-            ],
-            "name": "allowance",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function",
-            "constant": true
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "spender",
-                    "type": "address"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "amount",
-                    "type": "uint256"
-                }
-            ],
-            "name": "approve",
-            "outputs": [
-                {
-                    "internalType": "bool",
-                    "name": "",
-                    "type": "bool"
-                }
-            ],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "account",
-                    "type": "address"
-                }
-            ],
-            "name": "balanceOf",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function",
-            "constant": true
-        },
         {
             "inputs": [
                 {
@@ -203,13 +21,19 @@ $(document).ready(function() {
             "payable": true
         },
         {
-            "inputs": [],
-            "name": "decimals",
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "account",
+                    "type": "address"
+                }
+            ],
+            "name": "checkBalance",
             "outputs": [
                 {
-                    "internalType": "uint8",
+                    "internalType": "uint256",
                     "name": "",
-                    "type": "uint8"
+                    "type": "uint256"
                 }
             ],
             "stateMutability": "view",
@@ -232,49 +56,7 @@ $(document).ready(function() {
         },
         {
             "inputs": [],
-            "name": "name",
-            "outputs": [
-                {
-                    "internalType": "string",
-                    "name": "",
-                    "type": "string"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function",
-            "constant": true
-        },
-        {
-            "inputs": [],
-            "name": "owner",
-            "outputs": [
-                {
-                    "internalType": "address",
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function",
-            "constant": true
-        },
-        {
-            "inputs": [],
-            "name": "symbol",
-            "outputs": [
-                {
-                    "internalType": "string",
-                    "name": "",
-                    "type": "string"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function",
-            "constant": true
-        },
-        {
-            "inputs": [],
-            "name": "totalSupply",
+            "name": "TICKET_PRICE",
             "outputs": [
                 {
                     "internalType": "uint256",
@@ -290,7 +72,7 @@ $(document).ready(function() {
             "inputs": [
                 {
                     "internalType": "address",
-                    "name": "recipient",
+                    "name": "to",
                     "type": "address"
                 },
                 {
@@ -299,49 +81,7 @@ $(document).ready(function() {
                     "type": "uint256"
                 }
             ],
-            "name": "transfer",
-            "outputs": [
-                {
-                    "internalType": "bool",
-                    "name": "",
-                    "type": "bool"
-                }
-            ],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "sender",
-                    "type": "address"
-                },
-                {
-                    "internalType": "address",
-                    "name": "recipient",
-                    "type": "address"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "amount",
-                    "type": "uint256"
-                }
-            ],
-            "name": "transferFrom",
-            "outputs": [
-                {
-                    "internalType": "bool",
-                    "name": "",
-                    "type": "bool"
-                }
-            ],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "withdraw",
+            "name": "transferTickets",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
@@ -349,18 +89,24 @@ $(document).ready(function() {
     ];
 
     async function initializeWeb3() {
-        if (typeof window.ethereum !== "undefined") {
-            web3 = new Web3(window.ethereum);
-            try {
-                accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-                contract = new web3.eth.Contract(contractABI, contractAddress);
-                await checkNetwork();
-                await loadVendorAddress();
-            } catch (error) {
-                showStatusMessage("Failed to connect to MetaMask: " + error.message, "danger");
-            }
-        } else {
+        if (typeof window.ethereum === "undefined") {
             showStatusMessage("Please install MetaMask to use this DApp.", "danger");
+            return;
+        }
+
+        web3 = new Web3(window.ethereum);
+        try {
+            const requestedAccounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+            if (!requestedAccounts || requestedAccounts.length === 0) {
+                throw new Error("No accounts returned. Please allow MetaMask access.");
+            }
+            accounts = requestedAccounts;
+            contract = new web3.eth.Contract(contractABI, contractAddress);
+            await checkNetwork();
+            await loadVendorAddress(); // Note: No vendor function in this contract
+        } catch (error) {
+            console.error("MetaMask connection error:", error);
+            showStatusMessage(`Failed to connect to MetaMask: ${error.message}`, "danger");
         }
     }
 
@@ -374,13 +120,13 @@ $(document).ready(function() {
 
     async function loadVendorAddress() {
         try {
-            const vendorAddress = await contract.methods.owner().call();
+            const defaultVendor = accounts[0]; // Fallback to connected account
             $("#vendorAddress").html(`
                 <div class="alert alert-info" role="alert">
-                    Vendor Address: ${vendorAddress}
+                    Vendor Address: ${defaultVendor}
                 </div>
             `);
-            $("#recipientAddress").val(vendorAddress);
+            $("#recipientAddress").val(defaultVendor);
         } catch (error) {
             showStatusMessage(`Error fetching vendor address: ${error.message}`, "danger");
         }
@@ -403,12 +149,13 @@ $(document).ready(function() {
         $("#transferTicketButton").prop("disabled", true).html('<i class="fas fa-spinner fa-spin me-2"></i>Transferring...');
 
         try {
-            const amountInWei = web3.utils.toWei(ticketAmount, "ether");
-            await contract.methods.transferTickets(recipientAddress, amountInWei).send({ from: accounts[0] });
-
+            if (!accounts) throw new Error("No MetaMask accounts available");
+            const amount = ticketAmount;
+            await contract.methods.transferTickets(recipientAddress, amount).send({ from: accounts[0] });
             showStatusMessage(`Successfully transferred ${ticketAmount} tickets to ${recipientAddress}!`, "success");
         } catch (error) {
             showStatusMessage(`Error transferring tickets: ${error.message}`, "danger");
+            console.error("Transfer error details:", error);
         } finally {
             $("#transferTicketButton").prop("disabled", false).html('<i class="fas fa-exchange-alt me-2"></i>Transfer Tickets');
         }

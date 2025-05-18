@@ -20,7 +20,6 @@ $(document).ready(function() {
 
         try {
             const wallet = web3.eth.accounts.create();
-            // Create an unencrypted JSON object with wallet details
             const walletData = {
                 address: wallet.address,
                 privateKey: wallet.privateKey
