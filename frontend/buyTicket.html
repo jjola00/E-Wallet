@@ -27,6 +27,12 @@
                     <div class="card shadow-sm">
                         <div class="card-body">
                             <div class="mb-3">
+                                <h3>Ticket Information</h3>
+                                <p><strong>Ticket Type:</strong> General Admission</p>
+                                <p><strong>Price per Ticket:</strong> <span id="ticketPrice">-</span></p>
+                                <p><strong>Remaining Supply:</strong> <span id="remainingSupply">-</span> tickets</p>
+                            </div>
+                            <div class="mb-3">
                                 <label for="numberOfTickets" class="form-label">Number of Tickets</label>
                                 <input type="number" class="form-control" id="numberOfTickets" placeholder="Enter number of tickets" min="1">
                             </div>
@@ -35,6 +41,25 @@
                             </button>
                             <div id="statusMessage" class="mt-3"></div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirmation Modal -->
+        <div class="modal fade" id="confirmPurchaseModal" tabindex="-1" aria-labelledby="confirmPurchaseModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmPurchaseModalLabel">Confirm Purchase</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Dynamic content will be inserted here -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="confirmPurchaseButton">Confirm</button>
                     </div>
                 </div>
             </div>

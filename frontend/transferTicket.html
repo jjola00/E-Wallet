@@ -27,18 +27,57 @@
                     <div class="card shadow-sm">
                         <div class="card-body">
                             <div class="mb-3">
-                                <label for="recipientAddress" class="form-label">Recipient Address</label>
-                                <input type="text" class="form-control" id="recipientAddress" placeholder="Enter recipient's wallet address">
+                                <label for="recipientAddress" class="form-label">Recipient Address (Vendor Only)</label>
+                                <input type="text" class="form-control" id="recipientAddress" placeholder="Enter vendor address" value="0xeC67596e4cF7C1aB5ccFA8C0b20cC34d61129273" readonly>
                             </div>
                             <div class="mb-3">
                                 <label for="numberOfTickets" class="form-label">Number of Tickets</label>
                                 <input type="number" class="form-control" id="numberOfTickets" placeholder="Enter number of tickets" min="1">
                             </div>
-                            <button id="transferTicketsButton" class="button w-100 mb-3">
+                            <button id="transferTicketsButton" class="btn btn-primary w-100 mb-3">
                                 <i class="fas fa-exchange-alt me-2"></i>Transfer Tickets
                             </button>
                             <div id="statusMessage" class="mt-3"></div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirmation Modal -->
+        <div class="modal fade" id="confirmTransferModal" tabindex="-1" aria-labelledby="confirmTransferModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmTransferModalLabel">Confirm Transfer</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Dynamic content will be inserted here -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="confirmTransferButton">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirmation Modal for Wallet Creation/Download -->
+        <div class="modal fade" id="confirmDownloadModal" tabindex="-1" aria-labelledby="confirmDownloadModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmDownloadModalLabel">Confirm Download</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Securely save your keystore file and password. If lost, your funds cannot be recovered!</p>
+                        <p>Proceed to download?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="downloadKeystoreButton">Download</button>
                     </div>
                 </div>
             </div>

@@ -1,95 +1,47 @@
-html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-}
-
 body {
     background-color: #f8f9fa;
-    font-family: 'Courier New', Courier, monospace;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+    font-family: Arial, sans-serif;
 }
 
-nav {
-    position: sticky;
-    top: 0;
-    background-color: #121212;
-    padding: 14px 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
+nav#shared-nav {
+    background-color: #343a40;
+    padding: 1rem;
 }
 
-nav a {
-    font-family: 'Rockwell', sans-serif;
-    font-size: smaller;
-    color: #aeaeb7;
+nav#shared-nav a {
+    color: white;
+    margin-right: 1rem;
     text-decoration: none;
-    margin: 0 20px;
 }
 
-nav a.active {
-    color: #fff;
+nav#shared-nav a.active {
     font-weight: bold;
-}
-
-main {
-    flex: 1 0 auto;
+    color: #17a2b8;
 }
 
 .card {
     border: none;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.button {
-    margin: 10px;
-    width: 150px;
-    background-color: white;
-    color: black;
-    font-family: 'Rockwell', sans-serif;
-    font-size: 16px;
-    padding: 10px 20px;
+.btn-primary {
+    background-color: #17a2b8;
     border: none;
-    border-radius: 20px;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-    transition: background-color 0.3s, color 0.3s;
-    text-align: center;
-    display: inline-block;
 }
 
-.button:hover {
-    background-color: #000000;
-    color: white;
-    box-shadow: 0 0 20px rgba(28, 28, 28, 0.5);
-    transition: background-color 0.3s, color 0.3s;
+.btn-primary:hover {
+    background-color: #138496;
 }
 
-.w-100 {
-    width: 100% !important;
+.modal-content {
+    border-radius: 10px;
 }
 
-@media (max-width: 576px) {
-    .card-body {
-        padding: 1rem;
-    }
+#walletDetails input[readonly], #walletDetails textarea[readonly] {
+    background-color: #e9ecef;
+    border: none;
 }
 
-textarea.form-control {
-    background-color: #f1f1f1;
-    border: 1px solid #ced4da;
-    resize: none;
-}
-
-footer {
-    flex-shrink: 0;
-    background-color: black;
-    text-align: center;
-    font-family: Arial, Helvetica, sans-serif;
-    color: rgb(66, 66, 66);
-    padding: 10px;
+#actorMode {
+    margin-bottom: 1rem;
 }

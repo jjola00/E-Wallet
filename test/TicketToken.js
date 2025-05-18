@@ -1,69 +1,36 @@
 const { expect } = require("chai");
-const { ethers } = require("hardhat");
 
 describe("TicketToken", function () {
-  let TicketToken, ticketToken, owner, venue, attendee;
+    let TicketToken, ticketToken, owner, addr1, vendor;
 
-  beforeEach(async function () {
-    [owner, venue, attendee] = await ethers.getSigners();
-    TicketToken = await ethers.getContractFactory("TicketToken");
-    ticketToken = await TicketToken.deploy();
-    await ticketToken.waitForDeployment();
-  });
+    beforeEach(async function () {
+        [owner, addr1, vendor] = await ethers.getSigners();
+        TicketToken = await ethers.getContractFactory("TicketToken");
+        ticketToken = await TicketToken.deploy(vendor.address);
+        await ticketToken.waitForDeployment();
+    });
 
-  it("should deploy with the correct name and symbol", async function () {
-    expect(await ticketToken.name()).to.equal("TicketToken");
-    expect(await ticketToken.symbol()).to.equal("TKT");
-  });
+    it("Should allow buying tickets", async function () {
+        await ticketToken.connect(addr1).buyTickets(1, { value: ethers.parseEther("0.01") });
+        expect(await ticketToken.checkBalance(addr1.address)).to.equal(ethers.parseEther("1"));
+    });
 
-  it("should allow the owner to grant venue role", async function () {
-    await ticketToken.grantVenueRole(venue.address);
-    expect(await ticketToken.hasRole(ethers.id("VENUE_ROLE"), venue.address)).to.be.true;
-  });
+    it("Should allow returning tickets", async function () {
+        await ticketToken.connect(addr1).buyTickets(1, { value: ethers.parseEther("0.01") });
+        await ticketToken.connect(addr1).returnTickets(1);
+        expect(await ticketToken.checkBalance(addr1.address)).to.equal(0);
+    });
 
-  it("should allow venues to mint tickets", async function () {
-    await ticketToken.grantVenueRole(venue.address);
-    const amount = ethers.parseEther("100");
-    await ticketToken.connect(venue).mint(attendee.address, amount);
-    expect(await ticketToken.balanceOf(attendee.address)).to.equal(amount);
-  });
+    it("Should allow scanning tickets by venue", async function () {
+        await ticketToken.connect(addr1).buyTickets(1, { value: ethers.parseEther("0.01") });
+        await ticketToken.connect(vendor).scanTicket(addr1.address);
+        expect(await ticketToken.checkBalance(addr1.address)).to.equal(0);
+    });
 
-  it("should allow attendees to transfer tickets", async function () {
-    await ticketToken.grantVenueRole(venue.address);
-    const amount = ethers.parseEther("100");
-    await ticketToken.connect(venue).mint(attendee.address, amount);
-
-    const transferAmount = ethers.parseEther("50");
-    await ticketToken.connect(attendee).transferTickets(owner.address, transferAmount);
-    expect(await ticketToken.balanceOf(attendee.address)).to.equal(ethers.parseEther("50"));
-    expect(await ticketToken.balanceOf(owner.address)).to.equal(transferAmount);
-  });
-
-  it("should allow anyone to check balances", async function () {
-    await ticketToken.grantVenueRole(venue.address);
-    const amount = ethers.parseEther("100");
-    await ticketToken.connect(venue).mint(attendee.address, amount);
-    expect(await ticketToken.checkBalance(attendee.address)).to.equal(amount);
-  });
-
-  it("should return the correct total supply", async function () {
-    await ticketToken.grantVenueRole(venue.address);
-    const amount = ethers.parseEther("100");
-    await ticketToken.connect(venue).mint(attendee.address, amount);
-    expect(await ticketToken.getTotalSupply()).to.equal(amount);
-  });
-
-  it("should restrict minting to venues only", async function () {
-    const amount = ethers.parseEther("100");
-    // Use the custom error matcher for AccessControlUnauthorizedAccount
-    await expect(
-      ticketToken.connect(attendee).mint(attendee.address, amount)
-    ).to.be.revertedWithCustomError(
-      ticketToken,
-      "AccessControlUnauthorizedAccount"
-    ).withArgs(
-      attendee.address,
-      ethers.id("VENUE_ROLE")
-    );
-  });
+    it("Should fail transfer to non-vendor", async function () {
+        await ticketToken.connect(addr1).buyTickets(1, { value: ethers.parseEther("0.01") });
+        await expect(
+            ticketToken.connect(addr1).transferTickets(addr1.address, ethers.parseEther("1"))
+        ).to.be.revertedWith("Transfer failed");
+    });
 });

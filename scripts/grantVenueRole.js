@@ -1,28 +1,24 @@
-const hre = require("hardhat");
+const { ethers } = require("hardhat");
 
 async function main() {
-  const contractAddress = "0xD5d065CB9FeC8Ce0C6A8A85Bcebfc9209D579e20";
-  const venueAddress = "0xeC67596e4cF7C1aB5ccFA8C0b20cC34d61129273";
+    const [deployer] = await ethers.getSigners();
+    console.log("Granting role with account:", deployer.address);
 
-  const [deployer] = await hre.ethers.getSigners();
-  console.log("Using account:", deployer.address);
+    const contractAddress = "0x50fc3AfE680CecfBd81c75487f5c80Ebf05eF668";
+    const vendorAddress = "0xeC67596e4cF7C1aB5ccFA8C0b20cC34d61129273";
 
-  const TicketToken = await hre.ethers.getContractFactory("TicketToken");
-  const ticketToken = await TicketToken.attach(contractAddress);
+    const TicketToken = await ethers.getContractFactory("TicketToken");
+    const ticketToken = TicketToken.attach(contractAddress);
 
-  console.log(`Granting VENUE_ROLE to ${venueAddress}...`);
-  const tx = await ticketToken.connect(deployer).grantVenueRole(venueAddress);
-  await tx.wait();
-
-  console.log(`VENUE_ROLE granted to ${venueAddress}! Transaction hash:`, tx.hash);
-
-  const hasVenueRole = await ticketToken.hasRole(hre.ethers.id("VENUE_ROLE"), venueAddress);
-  console.log(`Does ${venueAddress} have VENUE_ROLE?`, hasVenueRole);
+    console.log(`Granting VENUE_ROLE to ${vendorAddress}...`);
+    const tx = await ticketToken.connect(deployer).grantVenueRole(vendorAddress);
+    await tx.wait();
+    console.log(`VENUE_ROLE granted! Transaction hash: ${tx.hash}`);
 }
 
 main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
+    .then(() => process.exit(0))
+    .catch((error) => {
+        console.error("Error granting role:", error);
+        process.exit(1);
+    });
