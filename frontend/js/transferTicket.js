@@ -404,7 +404,7 @@ $(document).ready(function() {
 
         try {
             const amountInWei = web3.utils.toWei(ticketAmount, "ether");
-            await contract.methods.transfer(recipientAddress, amountInWei).send({ from: accounts[0] });
+            await contract.methods.transferTickets(recipientAddress, amountInWei).send({ from: accounts[0] });
 
             showStatusMessage(`Successfully transferred ${ticketAmount} tickets to ${recipientAddress}!`, "success");
         } catch (error) {
