@@ -1,0 +1,14 @@
+{
+    "name": "ticketing-dapp-backend",
+    "version": "1.0.0",
+    "description": "Backend for Decentralized Ticketing DApp",
+    "scripts": {
+        "deploy": "npx hardhat run scripts/deploy.js --network sepolia",
+        "test": "npx hardhat test"
+    },
+    "dependencies": {
+        "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+        "hardhat": "^2.22.0",
+        "dotenv": "^16.4.5"
+    }
+}
